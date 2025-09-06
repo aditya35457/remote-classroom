@@ -1,0 +1,62 @@
+openapi: 3.0.3
+info:
+  title: Remote Classroom API
+  version: 0.1.0
+  description: Minimal API for Remote Classroom (auth, users, courses, attendance)
+
+servers:
+  - url: http://localhost:5000/v1
+    description: Local dev
+
+paths:
+  /auth/login:
+    post:
+      summary: Login and receive JWT
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email: { type: string }
+                password: { type: string }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token: { type: string }
+
+  /courses/{courseId}/attendance:
+    post:
+      summary: Mark attendance
+      parameters:
+        - in: path
+          name: courseId
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [sessionId, records]
+              properties:
+                sessionId: { type: string }
+                records:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      userId: { type: string }
+                      status:
+                        type: string
+                        enum: [present, absent, late]
+      responses:
+        '200': { description: Attendance recorded }
